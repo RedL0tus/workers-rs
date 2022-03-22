@@ -210,7 +210,7 @@ impl Response {
             ResponseBody::Empty => Ok(String::new()),
             ResponseBody::Stream(_) => {
                 let bytes = self.bytes().await?;
-                String::from_utf8(bytes).map_err(|e| Error::RustError(e.to_string()))
+                String::from_utf8(bytes).map_err(|e| Error::StringError(e.to_string()))
             }
         }
     }
@@ -244,7 +244,7 @@ impl Response {
     pub fn stream(&mut self) -> Result<ByteStream> {
         let stream = match &self.body {
             ResponseBody::Stream(edge_request) => edge_request.clone(),
-            _ => return Err(Error::RustError("body is not streamable".into())),
+            _ => return Err(Error::StringError("body is not streamable".into())),
         };
 
         let stream = wasm_streams::ReadableStream::from_raw(stream.dyn_into().unwrap());
@@ -309,7 +309,7 @@ impl Response {
     /// Clones the response so it can be used multiple times.
     pub fn cloned(&mut self) -> Result<Self> {
         if self.websocket.is_some() {
-            return Err(Error::RustError("WebSockets cannot be cloned".into()));
+            return Err(Error::StringError("WebSockets cannot be cloned".into()));
         }
 
         let edge = EdgeResponse::from(&*self);

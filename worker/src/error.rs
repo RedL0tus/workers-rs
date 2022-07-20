@@ -1,6 +1,5 @@
 use crate::Response;
 use serde_json::json;
-use std::result::Result;
 use thiserror::Error;
 use wasm_bindgen::{JsCast, JsValue};
 
